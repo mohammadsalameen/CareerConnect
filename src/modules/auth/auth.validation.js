@@ -6,3 +6,8 @@ export const registerValidation = Joi.object({
     password : Joi.string().min(6).max(20).required(),
     role : Joi.string().valid('admin', 'employer', 'applicant').default('applicant')
 });
+
+export const loginValidation = Joi.object({
+    email : Joi.string().email().required(),
+    password : Joi.string().min(6).max(20).required()
+});
