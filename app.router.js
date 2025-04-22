@@ -1,6 +1,7 @@
 import cors from 'cors'
 import connectDB from './DB/connection.js';
 import authRouter from './src/modules/auth/auth.router.js';
+import jobRouter from './src/modules/job/job.router.js';
 
 const initApp = async(app, express) =>{
     app.use(express.json());
@@ -8,6 +9,7 @@ const initApp = async(app, express) =>{
     connectDB();
 
     app.use('/auth', authRouter);
+    app.use('/job', jobRouter);
 
     app.get('/', (req, res) =>{
         return res.status(200).json("Welcome ....");
