@@ -8,5 +8,6 @@ import { createJobSchema } from "./job.validation.js";
 const router = Router();
 
 router.post('/create',validation(createJobSchema), auth(['admin', 'employer']), asyncHandler(jobController.createJob));
+router.get('/', asyncHandler(jobController.getAllJobs));
 
 export default router;
