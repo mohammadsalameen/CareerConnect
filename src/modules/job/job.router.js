@@ -1,5 +1,5 @@
 import { Router } from "express";
-import asyncHandler from "../../utils/catchError.js";
+import asyncHandler from "../../middleware/catchError.js";
 import * as jobController from "./job.controller.js";
 import auth from "../../middleware/auth.js";
 import validation from "../../middleware/validation.js";
