@@ -27,6 +27,9 @@ const userSchema = new Schema ({
         default : 'applicant'
     },
     companyName : String
+},
+{
+    timestamps : true
 });
 
 const userModel = mongoose.models.User || mongoose.model('User', userSchema);
