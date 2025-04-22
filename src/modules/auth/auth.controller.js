@@ -12,5 +12,4 @@ export const register = async (req, res, next) =>{
 
     if(!newUser) return next (new AppError('Failed to create user', 500));
     return res.status(201).json({message: 'User registered successfully', user: newUser});
-
 }
