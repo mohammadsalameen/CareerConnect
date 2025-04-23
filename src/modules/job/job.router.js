@@ -7,7 +7,11 @@ import { createJobSchema } from "./job.validation.js";
 
 const router = Router();
 
-router.post('/create',validation(createJobSchema), auth(['admin', 'employer']), asyncHandler(jobController.createJob));
+router.post('/create',validation(createJobSchema), auth(['employer']), asyncHandler(jobController.createJob));
 router.get('/', asyncHandler(jobController.getAllJobs));
+router.get('/my-jobs', auth(['employer']), asyncHandler(jobController.getMyJobs));
+router.get('/:id', asyncHandler(jobController.getJobById));
+router.put('/:id', auth(['employer']), asyncHandler(jobController.updateJob));
+router.delete('/:id', auth(['admin', 'employer']), asyncHandler(jobController.deleteJob));
 
 export default router;
