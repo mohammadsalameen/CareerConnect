@@ -11,8 +11,8 @@ const applicationSchema = new Schema({
         ref : 'Job',
         required : true
     },
-    resumeUrl : {
-        type : String,
+    cv : {
+        type : Object,
         required : true
     }
 },
