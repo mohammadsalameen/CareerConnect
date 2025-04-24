@@ -11,7 +11,7 @@ const auth = (accessRoles = []) => {
         const decoded = jwt.verify(token, process.env.LOGIN_SECRET);
         const user = await userModel.findById(decoded.id);
 
-        if(!accessRoles.includes(user.role) == 'applicant') {
+        if (!accessRoles.includes(user.role)){
             return next(new AppError('Unauthorized', 401));
         }
 

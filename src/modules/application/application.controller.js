@@ -38,3 +38,16 @@ export const getMyApplications = async (req, res, next) => {
 
     return res.status(200).json({message: 'Applications fetched successfully', applications});
 }
+
+export const getJobApplications = async (req, res, next) => {
+    const {jobId} = req.params;
+    
+    const job = await jobModel.findById(jobId);
+    if(!job) return next(new AppError('Job not found', 404));
+
+    const applications = await applicationModel.find({job : jobId}).populate('applicant', 'name email');
+    if(!applications) return next(new AppError('Failed to get applications', 500));
+    if(applications.length === 0) return next(new AppError('No applications found', 404));
+
+    return res.status(200).json({message: 'Applications fetched successfully', applications});
+}
