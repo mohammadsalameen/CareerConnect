@@ -5,7 +5,7 @@ import cloudinary from "../../utils/cloudinary.js";
 
 export const applyJob = async (req, res, next) => {
     const { jobId } = req.body;
-    
+
     const job = await jobModel.findById(jobId);
     if(!job) return next(new AppError('Job not found', 404));
 
@@ -29,4 +29,12 @@ export const applyJob = async (req, res, next) => {
     if(!application) return next(new AppError('Failed to apply for job', 500));
 
     return res.status(201).json({message: 'Applied for job successfully', application});
+}
+
+export const getMyApplications = async (req, res, next) => {
+    const applications = await applicationModel.find({applicant : req.id}).populate('job', 'title description location salary category postedBy').populate('applicant', 'name email');
+
+    if(!applications) return next(new AppError('Failed to get applications', 500));
+
+    return res.status(200).json({message: 'Applications fetched successfully', applications});
 }
