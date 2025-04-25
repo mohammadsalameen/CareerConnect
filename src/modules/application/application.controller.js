@@ -1,5 +1,5 @@
 
-import { createApplication, findAppById, findAppByIdAndUpdate, findApplicationByJobAndApplicant } from "../../repository/applicationRepo.js";
+import { createApplication, findAppById, findAppByIdAndUpdate, findApplicationByJobAndApplicant, findApplicationsByJobId } from "../../repository/applicationRepo.js";
 import { findJobById } from "../../repository/jobRepo.js";
 import { findUserById } from "../../repository/userRepo.js";
 import { AppError } from "../../utils/AppError.js";
@@ -53,10 +53,9 @@ export const getJobApplications = async (req, res, next) => {
     const job = await findJobById(jobId);
     if(!job) return next(new AppError('Job not found', 404));
 
-    const applications = await findAppById(jobId);
+    const applications = await findApplicationsByJobId(jobId);
     if(!applications) return next(new AppError('Failed to get applications', 500));
     if(applications.length === 0) return next(new AppError('No applications found', 404));
-
     return res.status(200).json({message: 'Applications fetched successfully', applications});
 }
 

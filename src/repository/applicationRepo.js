@@ -25,3 +25,9 @@ export const findAppByIdAndUpdate = async (applicationId, status) => await appli
     { path: 'applicant', select: 'name email' },
     { path: 'job', select: 'title' }
   ]);
+
+  export const findApplicationsByJobId = async (jobId) =>
+  await applicationModel
+    .find({ job: jobId })
+    .populate("job", "title description location salary category postedBy")
+    .populate("applicant", "name email");
