@@ -1,6 +1,7 @@
-import applicationModel from "../../../DB/models/application.model.js";
-import jobModel from "../../../DB/models/job.model.js";
-import { createApplication, findAppById, findAppByIdAndUpdate, findApplicationByJobAndApplicant, findJobById, findUserById } from "../../repository/applicationRepo.js";
+
+import { createApplication, findAppById, findAppByIdAndUpdate, findApplicationByJobAndApplicant } from "../../repository/applicationRepo.js";
+import { findJobById } from "../../repository/jobRepo.js";
+import { findUserById } from "../../repository/userRepo.js";
 import { AppError } from "../../utils/AppError.js";
 import cloudinary from "../../utils/cloudinary.js";
 import { getJobApplicationEmail, getStatusUpdateEmail } from "../../utils/htmlMessages.js";
@@ -66,7 +67,7 @@ export const updateApplicationStatus = async (req, res, next) => {
 
     const application = await findAppByIdAndUpdate(applicationId, status);
     if(!application) return next(new AppError('application not found', 404));
-    
+
     await sendEmail(application.applicant.email, 'Career Connect Status ', getStatusUpdateEmail({name : application.applicant.name, status, jobTitle : application.job.title}));
     return res.status(200).json({message: 'Application status updated successfully', application});
 }

@@ -1,6 +1,4 @@
-import jobModel from "../../../DB/models/job.model.js";
-import { findJobById } from "../../repository/applicationRepo.js";
-import { createJobRepo, findJobByIdAndDelete, findJobByIdAndUpdate, findJobs } from "../../repository/jobRepo.js";
+import { createJobRepo, findJobById, findJobByIdAndDelete, findJobByIdAndUpdate, findJobs } from "../../repository/jobRepo.js";
 import { AppError } from "../../utils/AppError.js";
 
 export const createJob = async (req, res, next) => {

@@ -40,4 +40,6 @@ export const findJobByIdAndUpdate = async (
     { new: true }
   );
 
-  export const findJobByIdAndDelete = async (id) => await jobModel.findByIdAndDelete(id)
+  export const findJobByIdAndDelete = async (id) => await jobModel.findByIdAndDelete(id);
+
+  export const findJobById = async (jobId) => await jobModel.findById(jobId).populate('postedBy', 'name email');

@@ -1,18 +1,18 @@
-import userModel from "../../../DB/models/user.model.js";
 import bcrypt from 'bcrypt';
 import { AppError } from "../../utils/AppError.js";
 import jwt from 'jsonwebtoken';
 import sendEmail from "../../utils/sendEmail.js";
 import { getEmailMessage } from "../../utils/htmlMessages.js";
+import { createUser, findOneUser, findUserByEmail } from "../../repository/userRepo.js";
 
 export const register = async (req, res, next) =>{
     const {name, email, password} = req.body;
 
-    const user = await userModel.find({email});
+    const user = await findUserByEmail(email);
     if(user.length) return res.status(409).json({message: 'Email already exists'});
 
     const hashedPassword = await bcrypt.hash(password, Number(process.env.SALT_ROUNDS));
-    const newUser = await userModel.create({name, email, password: hashedPassword});
+    const newUser = await createUser(name, email, hashedPassword);
 
     await sendEmail(email, 'Welcome to our platform', getEmailMessage({name}));
 
@@ -23,7 +23,7 @@ export const register = async (req, res, next) =>{
 export const login = async (req, res, next) => {
     const {email, password} = req.body;
 
-    const user = await userModel.findOne({email});
+    const user = await findOneUser(email);
     if(user == null) return next(new AppError('Invalid data', 404));
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
