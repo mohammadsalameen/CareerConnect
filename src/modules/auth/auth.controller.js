@@ -2,6 +2,8 @@ import userModel from "../../../DB/models/user.model.js";
 import bcrypt from 'bcrypt';
 import { AppError } from "../../utils/AppError.js";
 import jwt from 'jsonwebtoken';
+import sendEmail from "../../utils/sendEmail.js";
+import { getEmailMessage } from "../../utils/htmlMessages.js";
 
 export const register = async (req, res, next) =>{
     const {name, email, password} = req.body;
@@ -11,6 +13,8 @@ export const register = async (req, res, next) =>{
 
     const hashedPassword = await bcrypt.hash(password, Number(process.env.SALT_ROUNDS));
     const newUser = await userModel.create({name, email, password: hashedPassword});
+
+    await sendEmail(email, 'Welcome to our platform', getEmailMessage({name}));
 
     if(!newUser) return next (new AppError('Failed to create user', 500));
     return res.status(201).json({message: 'User registered successfully', user: newUser});
