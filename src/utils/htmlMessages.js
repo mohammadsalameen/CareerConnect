@@ -21,3 +21,31 @@ export const getEmailMessage = ({name}) => {
 </div>
 `;
 }
+
+export const getJobApplicationEmail = ({ name, jobTitle }) => {
+    return `
+    <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 40px;">
+      <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+        <div style="text-align: center;">
+          <h2 style="color: #4CAF50;">✅ Application Received!</h2>
+        </div>
+        <p style="font-size: 16px; color: #333;">Hi <strong>${name}</strong>,</p>
+        <p style="font-size: 16px; color: #333;">
+          Your application for the position of <strong>${jobTitle}</strong> has been successfully received on CareerConnect.
+        </p>
+        <p style="font-size: 16px; color: #333;">
+          Our team or the employer will review your CV and get back to you shortly.
+        </p>
+        <div style="margin: 30px 0; text-align: center;">
+          <a href="" style="background-color: #4CAF50; color: white; padding: 12px 24px; border-radius: 5px; text-decoration: none; font-size: 16px;">Visit CareerConnect</a>
+        </div>
+        <p style="font-size: 14px; color: #777;">Thanks for trusting us to grow your career 🚀</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+        <p style="font-size: 14px; color: #999; text-align: center;">
+          CareerConnect Team &copy; 2025
+        </p>
+      </div>
+    </div>
+    `;
+  };
+  

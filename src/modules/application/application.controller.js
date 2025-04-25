@@ -1,7 +1,10 @@
 import applicationModel from "../../../DB/models/application.model.js";
 import jobModel from "../../../DB/models/job.model.js";
+import userModel from "../../../DB/models/user.model.js";
 import { AppError } from "../../utils/AppError.js";
 import cloudinary from "../../utils/cloudinary.js";
+import { getJobApplicationEmail } from "../../utils/htmlMessages.js";
+import sendEmail from "../../utils/sendEmail.js";
 
 export const applyJob = async (req, res, next) => {
     const { jobId } = req.body;
@@ -26,6 +29,14 @@ export const applyJob = async (req, res, next) => {
     job.applicants.push(req.id);
     await job.save();
 
+    const applicant = await userModel.findById(req.id);
+    if (applicant?.email) {
+      await sendEmail(
+        applicant.email,
+        'Job Application',
+        getJobApplicationEmail({name : applicant.name, jobTitle : job.title})
+      );
+    }  
     if(!application) return next(new AppError('Failed to apply for job', 500));
 
     return res.status(201).json({message: 'Applied for job successfully', application});
@@ -41,7 +52,7 @@ export const getMyApplications = async (req, res, next) => {
 
 export const getJobApplications = async (req, res, next) => {
     const {jobId} = req.params;
-    
+
     const job = await jobModel.findById(jobId);
     if(!job) return next(new AppError('Job not found', 404));
 
