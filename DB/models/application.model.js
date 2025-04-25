@@ -14,6 +14,11 @@ const applicationSchema = new Schema({
     cv : {
         type : Object,
         required : true
+    },
+    status : {
+        type : String,
+        enum : ['pending', 'interview', 'accepted', 'rejected'],
+        default : 'pending'
     }
 },
 {

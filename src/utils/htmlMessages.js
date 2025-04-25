@@ -49,3 +49,44 @@ export const getJobApplicationEmail = ({ name, jobTitle }) => {
     `;
   };
   
+  export const getStatusUpdateEmail = ({ name, status, jobTitle }) => {
+    const statusStyles = {
+      rejected: {
+        title: '❌ Application Rejected',
+        message: `We're sorry to inform you that your application for <strong>${jobTitle}</strong> was not successful.`,
+        color: '#e74c3c'
+      },
+      interview: {
+        title: '📅 Interview Invitation',
+        message: `Congratulations! You’ve been shortlisted for an interview for <strong>${jobTitle}</strong>. We’ll contact you soon with the details.`,
+        color: '#3498db'
+      },
+      accepted: {
+        title: '✅ Application Accepted',
+        message: `Great news! You’ve been accepted for the job: <strong>${jobTitle}</strong>. Welcome aboard!`,
+        color: '#2ecc71'
+      }
+    };
+  
+    const { title, message, color } = statusStyles[status] || {
+      title: '🔔 Status Update',
+      message: `The status of your application for <strong>${jobTitle}</strong> has been updated.`,
+      color: '#f39c12'
+    };
+  
+    return `
+    <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 40px;">
+      <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 5px 10px rgba(0,0,0,0.05);">
+        <div style="text-align: center;">
+          <h2 style="color: ${color};">${title}</h2>
+        </div>
+        <p style="font-size: 16px; color: #333;">Hi <strong>${name}</strong>,</p>
+        <p style="font-size: 16px; color: #333;">${message}</p>
+        <p style="font-size: 14px; color: #777; margin-top: 30px;">If you have any questions, feel free to reach out.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+        <p style="font-size: 14px; color: #999; text-align: center;">CareerConnect Team &copy; 2025</p>
+      </div>
+    </div>
+    `;
+  };
+  

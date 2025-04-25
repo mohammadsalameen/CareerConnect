@@ -3,7 +3,7 @@ import jobModel from "../../../DB/models/job.model.js";
 import userModel from "../../../DB/models/user.model.js";
 import { AppError } from "../../utils/AppError.js";
 import cloudinary from "../../utils/cloudinary.js";
-import { getJobApplicationEmail } from "../../utils/htmlMessages.js";
+import { getJobApplicationEmail, getStatusUpdateEmail } from "../../utils/htmlMessages.js";
 import sendEmail from "../../utils/sendEmail.js";
 
 export const applyJob = async (req, res, next) => {
@@ -61,4 +61,22 @@ export const getJobApplications = async (req, res, next) => {
     if(applications.length === 0) return next(new AppError('No applications found', 404));
 
     return res.status(200).json({message: 'Applications fetched successfully', applications});
+}
+
+export const updateApplicationStatus = async (req, res, next) => {
+    const {applicationId} = req.params;
+    const {status} = req.body;
+    if(!['accepted', 'rejected', 'interview'].includes(status)) return next(new AppError('Invalid status', 400));
+    const application = await applicationModel.findByIdAndUpdate(
+        applicationId,
+        { status },
+        { new: true }
+      ).populate([
+        { path: 'applicant', select: 'name email' },
+        { path: 'job', select: 'title' }
+      ]);
+
+    if(!application) return next(new AppError('application not found', 404));
+    await sendEmail(application.applicant.email, 'Career Connect Status ', getStatusUpdateEmail({name : application.applicant.name, status, jobTitle : application.job.title}));
+    return res.status(200).json({message: 'Application status updated successfully', application});
 }

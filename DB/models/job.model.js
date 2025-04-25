@@ -31,7 +31,8 @@ const jobSchema = new Schema({
         {
             type : Types.ObjectId,
             ref : 'Application'
-        }
+        },
+        
     ]
 },
 {
