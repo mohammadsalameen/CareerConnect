@@ -1,6 +1,6 @@
 import applicationModel from "../../../DB/models/application.model.js";
 import jobModel from "../../../DB/models/job.model.js";
-import userModel from "../../../DB/models/user.model.js";
+import { createApplication, findAppById, findAppByIdAndUpdate, findApplicationByJobAndApplicant, findJobById, findUserById } from "../../repository/applicationRepo.js";
 import { AppError } from "../../utils/AppError.js";
 import cloudinary from "../../utils/cloudinary.js";
 import { getJobApplicationEmail, getStatusUpdateEmail } from "../../utils/htmlMessages.js";
@@ -9,10 +9,10 @@ import sendEmail from "../../utils/sendEmail.js";
 export const applyJob = async (req, res, next) => {
     const { jobId } = req.body;
 
-    const job = await jobModel.findById(jobId);
+    const job = await findJobById(jobId);
     if(!job) return next(new AppError('Job not found', 404));
 
-    const existingApplication = await applicationModel.findOne({job : jobId, applicant : req.id});
+    const existingApplication = await findApplicationByJobAndApplicant( jobId,  req.id);
     if(existingApplication) return next(new AppError('Already applied for this job', 409));
 
     if(!req.files || !req.files.cv) return next(new AppError('CV is required', 400));
@@ -21,15 +21,11 @@ export const applyJob = async (req, res, next) => {
         folder : `${process.env.APP_NAME}/cv`
     });
 
-    const application = await applicationModel.create({
-        job : jobId,
-        applicant : req.id,
-        cv : uploaded.secure_url
-    });
+    const application = await createApplication(jobId, req.id, uploaded.secure_url);
     job.applicants.push(req.id);
     await job.save();
 
-    const applicant = await userModel.findById(req.id);
+    const applicant = await findUserById(req.id);
     if (applicant?.email) {
       await sendEmail(
         applicant.email,
@@ -43,7 +39,7 @@ export const applyJob = async (req, res, next) => {
 }
 
 export const getMyApplications = async (req, res, next) => {
-    const applications = await applicationModel.find({applicant : req.id}).populate('job', 'title description location salary category postedBy').populate('applicant', 'name email');
+    const applications = await findAppById(req.id);
 
     if(!applications) return next(new AppError('Failed to get applications', 500));
 
@@ -53,10 +49,10 @@ export const getMyApplications = async (req, res, next) => {
 export const getJobApplications = async (req, res, next) => {
     const {jobId} = req.params;
 
-    const job = await jobModel.findById(jobId);
+    const job = await findJobById(jobId);
     if(!job) return next(new AppError('Job not found', 404));
 
-    const applications = await applicationModel.find({job : jobId}).populate('applicant', 'name email');
+    const applications = await findAppById(jobId);
     if(!applications) return next(new AppError('Failed to get applications', 500));
     if(applications.length === 0) return next(new AppError('No applications found', 404));
 
@@ -67,16 +63,10 @@ export const updateApplicationStatus = async (req, res, next) => {
     const {applicationId} = req.params;
     const {status} = req.body;
     if(!['accepted', 'rejected', 'interview'].includes(status)) return next(new AppError('Invalid status', 400));
-    const application = await applicationModel.findByIdAndUpdate(
-        applicationId,
-        { status },
-        { new: true }
-      ).populate([
-        { path: 'applicant', select: 'name email' },
-        { path: 'job', select: 'title' }
-      ]);
 
+    const application = await findAppByIdAndUpdate(applicationId, status);
     if(!application) return next(new AppError('application not found', 404));
+    
     await sendEmail(application.applicant.email, 'Career Connect Status ', getStatusUpdateEmail({name : application.applicant.name, status, jobTitle : application.job.title}));
     return res.status(200).json({message: 'Application status updated successfully', application});
 }
