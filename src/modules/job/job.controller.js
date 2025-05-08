@@ -56,6 +56,7 @@ export const deleteJob = async (req, res, next) => {
 
 export const getMyJobs = async (req, res, next) => {
     const jobs = await findJobs({postedBy: req.id});
+    if(jobs.length === 0) return next(new AppError('No jobs found', 404));
     if(!jobs) return next(new AppError('Failed to get jobs', 500));
 
     return res.status(200).json({message: 'Jobs fetched successfully', jobs});
