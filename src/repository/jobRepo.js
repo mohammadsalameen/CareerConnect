@@ -6,7 +6,9 @@ export const createJobRepo = async (
   location,
   salary,
   category,
-  postedBy
+  postedBy,
+  expireDate,
+  status = "open"
 ) =>
   await jobModel.create({
     title,
@@ -15,6 +17,8 @@ export const createJobRepo = async (
     salary,
     category,
     postedBy,
+    expireDate,
+    status,
   });
 
 export const findJobs = async (filter = {}) =>

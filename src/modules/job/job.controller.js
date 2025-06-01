@@ -2,20 +2,24 @@ import { createJobRepo, findJobById, findJobByIdAndDelete, findJobByIdAndUpdate,
 import { AppError } from "../../utils/AppError.js";
 
 export const createJob = async (req, res, next) => {
-    const {title, description, location,category, salary} = req.body;
-
+    const { title, description, location, category, salary, expireDate, status } = req.body;
+  
     const job = await createJobRepo(
-        title,
-        description,
-        location,
-        salary,
-        category,
-        req.id
+      title,
+      description,
+      location,
+      salary,
+      category,
+      req.id,
+      expireDate,
+      status 
     );
-    if(!job) return next(new AppError('Failed to create job', 500));
-
-    return res.status(201).json({message: 'Job created successfully', job});
-}
+  
+    if (!job) return next(new AppError('Failed to create job', 500));
+  
+    return res.status(201).json({ message: 'Job created successfully', job });
+  };
+  
 
 export const getAllJobs = async (req, res, next) => {
     const jobs = await findJobs();

@@ -33,7 +33,16 @@ const jobSchema = new Schema({
             ref : 'Application'
         },
         
-    ]
+    ],
+    status : {
+        type : String,
+        enum : ['open', 'closed'],
+        default : 'open'
+    },
+    expireDate : {
+        type : Date,
+        required : true
+    },
 },
 {
     timestamps : true

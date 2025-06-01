@@ -13,6 +13,11 @@ export const applyJob = async (req, res, next) => {
     const job = await findJobById(jobId);
     if(!job) return next(new AppError('Job not found', 404));
 
+    const now = new Date();
+    if(job.status === 'closed' || job.expireDate < now) {
+        return next(new AppError('Job is closed or expired', 400));
+    }
+
     const existingApplication = await findApplicationByJobAndApplicant( jobId,  req.id);
     if(existingApplication) return next(new AppError('Already applied for this job', 409));
 
@@ -66,6 +71,11 @@ export const updateApplicationStatus = async (req, res, next) => {
 
     const application = await findAppByIdAndUpdate(applicationId, status);
     if(!application) return next(new AppError('application not found', 404));
+
+    if(status === 'accepted'){
+        application.job.status = 'closed';
+        await application.job.save();
+    }
 
     await sendEmail(application.applicant.email, 'Career Connect Status ', getStatusUpdateEmail({name : application.applicant.name, status, jobTitle : application.job.title}));
     return res.status(200).json({message: 'Application status updated successfully', application});
